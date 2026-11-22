@@ -1,0 +1,14 @@
+{
+  "agent": "Codex",
+  "model": "GPT-6",
+  "mode": "default",
+  "tools": [
+    "exec_command",
+    "apply_patch",
+    "web.run",
+    "collaboration.spawn_agent",
+    "collaboration.send_message",
+    "collaboration.followup_task"
+  ],
+  "note": "Описание текущей сессии, не исполняемая конфигурация. Семейство модели указано по контексту сессии; точный идентификатор не предоставлен."
+}

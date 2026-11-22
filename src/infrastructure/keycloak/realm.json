@@ -1,0 +1,201 @@
+{
+  "realm": "zayavka",
+  "enabled": true,
+  "displayName": "Заявка",
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "accessTokenLifespan": 300,
+  "attributes": {
+    "CreateDefaultClientScopes": "true"
+  },
+  "roles": {
+    "realm": [
+      {
+        "name": "employee"
+      },
+      {
+        "name": "executor"
+      },
+      {
+        "name": "admin"
+      },
+      {
+        "name": "training-export"
+      }
+    ]
+  },
+  "clientScopes": [
+    {
+      "name": "zayavka-api",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "tickets-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "tickets",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "analytics-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "analytics",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "classification-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "classification",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "zayavka-mobile",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "com.example.zayavka:/oauthredirect"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "com.example.zayavka:/oauthredirect"
+      },
+      "defaultClientScopes": [
+        "basic",
+        "roles",
+        "profile",
+        "email",
+        "zayavka-api"
+      ]
+    },
+    {
+      "clientId": "tickets-service",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "${TICKETS_CLIENT_SECRET}",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "defaultClientScopes": [
+        "basic",
+        "roles",
+        "kc-admin-api"
+      ]
+    },
+    {
+      "clientId": "classification-worker",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "${CLASSIFICATION_CLIENT_SECRET}",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "defaultClientScopes": [
+        "basic",
+        "roles",
+        "zayavka-api"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin",
+      "firstName": "Администратор",
+      "enabled": true,
+      "realmRoles": [
+        "employee",
+        "admin"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${APP_ADMIN_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "lastName": "admin",
+      "email": "admin@example.test",
+      "emailVerified": true
+    },
+    {
+      "username": "employee",
+      "firstName": "Сотрудник",
+      "enabled": true,
+      "realmRoles": [
+        "employee"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${APP_EMPLOYEE_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "lastName": "employee",
+      "email": "employee@example.test",
+      "emailVerified": true
+    },
+    {
+      "username": "executor",
+      "firstName": "Исполнитель",
+      "enabled": true,
+      "realmRoles": [
+        "employee",
+        "executor"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${APP_EXECUTOR_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "lastName": "executor",
+      "email": "executor@example.test",
+      "emailVerified": true
+    },
+    {
+      "username": "service-account-tickets-service",
+      "enabled": true,
+      "serviceAccountClientId": "tickets-service",
+      "clientRoles": {
+        "realm-management": [
+          "view-users",
+          "query-users",
+          "view-realm"
+        ]
+      }
+    },
+    {
+      "username": "service-account-classification-worker",
+      "enabled": true,
+      "serviceAccountClientId": "classification-worker",
+      "realmRoles": [
+        "training-export"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+name: zayavka-kibana
+services:
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.5.6
+    ports:
+    - 127.0.0.1:5601:5601
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      TELEMETRY_ENABLED: 'false'
+    restart: unless-stopped
+networks:
+  default:
+    name: zayavka
+    external: true

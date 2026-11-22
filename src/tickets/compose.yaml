@@ -1,0 +1,51 @@
+name: zayavka-tickets
+
+services:
+  tickets:
+    build:
+      context: ../..
+      dockerfile: src/tickets/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://tickets:${DB_PASSWORD:?Set DB_PASSWORD}@tickets-db/tickets
+      AUTH_ISSUER: ${PUBLIC_URL:-http://localhost:8080}/realms/zayavka
+      AUTH_JWKS_URL: http://keycloak:8080/realms/zayavka/protocol/openid-connect/certs
+      AUTH_AUDIENCE: tickets
+      ROOT_PATH: /api
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: zayavka
+      KEYCLOAK_CLIENT_ID: tickets-service
+      KEYCLOAK_CLIENT_SECRET: ${TICKETS_CLIENT_SECRET:?Set TICKETS_CLIENT_SECRET}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+    depends_on:
+      tickets-db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  tickets-db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tickets
+      POSTGRES_USER: tickets
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD}
+    volumes:
+      - tickets-db:/var/lib/postgresql
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U tickets -d tickets]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  tickets-db:
+
+networks:
+  default:
+    external: true
+    name: zayavka

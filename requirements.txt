@@ -1,0 +1,3 @@
+-r src/tickets/requirements.txt
+-r src/analytics/requirements.txt
+-r src/classification/requirements.txt

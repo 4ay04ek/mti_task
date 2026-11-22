@@ -1,0 +1,10 @@
+.git
+.venv
+.tools
+.check
+.dart_tool
+build
+android
+ios
+**/__pycache__
+.env

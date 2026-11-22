@@ -1,0 +1,18 @@
+name: zayavka-logstash
+services:
+  logstash:
+    image: docker.elastic.co/logstash/logstash:9.5.6
+    environment:
+      LS_JAVA_OPTS: -Xms256m -Xmx256m
+      XPACK_MONITORING_ENABLED: 'false'
+      QUEUE_TYPE: persisted
+    volumes:
+    - ./pipeline.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    - logstash:/usr/share/logstash/data
+    restart: unless-stopped
+volumes:
+  logstash: null
+networks:
+  default:
+    name: zayavka
+    external: true
